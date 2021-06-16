@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=A;
+Name[zh_CN]="我是A"
+Exec=cat %f
+Icon=/home/xiangnian/Desktop/for-test/icon.jpeg
+
