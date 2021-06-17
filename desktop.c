@@ -2,10 +2,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-
-#define MAX_LINE 50
-#define MAX_COLUMN 50
+#define MAX_LINE 100
+#define MAX_COLUMN 100
 #define CASE_N "-n"
 #define CASE_I "-i"
 #define CASE_E "-e"
@@ -15,10 +15,11 @@ char exec_cat_name[20] = "cat ";
 
 int main(int agrc, char *argv[]){
 
-    char options[5][100] = {0};
-    char name[20] = {0};
-    char icon[30] = {0};
-    char exec[30] = {0};
+    char options[6][100] = {0};
+    char name[100] = {0};
+    char icon[100] = {0};
+    char exec[100] = {0};
+    char name_zh[50] = {0};
     FILE *fp;
     
     if (agrc < 3)
@@ -41,12 +42,19 @@ int main(int agrc, char *argv[]){
         return -1;
     }
     size_t i=0;
+    bool with_zh = false;
     while (fgets(desktop[i], 255, fp) != NULL)
     {
-        // printf("%s",desktop[i]);
         if (strstr(desktop[i],"Name"))
         {
-            memcpy(name,desktop[i],sizeof(desktop[i]));
+            if (strstr(desktop[i],"[zh_CN]"))
+            {
+                memcpy(name_zh,desktop[i]+1,strlen(desktop[i])-3);
+                with_zh =true;
+            }else
+            {
+                memcpy(name,desktop[i],strlen(desktop[i])-1);
+            }
         }
         if (strstr(desktop[i],"Icon"))
         {
@@ -54,23 +62,39 @@ int main(int agrc, char *argv[]){
         }
         if (strstr(desktop[i],"Exec"))
         {
-            memcpy(exec,desktop[i],sizeof(desktop[i]));
+            memcpy(exec,desktop[i],strlen(desktop[i])-1);
         }   
         i++;
     }
   
     if (memcmp(options[3],"-n",2) == 0)
     {
-        printf("%s",name+5);
+        if (with_zh){
+            printf("%s或%s",name+5,name_zh+12);
+        }else{
+            printf("%s",name+5);
+        }
     }else if (memcmp(options[3],"-i",2) == 0)
     {
         printf("%s",icon+5);
     }else if (memcmp(options[3],"-e",2) == 0)
     {
-        system(exec+5);
+        if (options[4])
+        {
+            char exec_combain[100] = {0};
+            //char *ptr = strtok(exec, " ");
+            sprintf(exec_combain, "%s > %s", exec+5, options[4]);
+            printf("%s",exec_combain);
+            system(exec_combain);
+        }else
+        {
+            printf("need file path after '-e' ");
+        }
+        printf("%s",options[4]);
+       
     }else
     {
-        printf("error argument!!!\n");
+        printf("without argument -n -i -e !!!\n");
     }
     
     
