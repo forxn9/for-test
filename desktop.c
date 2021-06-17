@@ -6,9 +6,20 @@
 
 #define MAX_LINE 100
 #define MAX_COLUMN 100
+#define OPTIONS_LENGTH 2
+
+enum{
+    OPTIONS_ONE=1,
+    OPTIONS_TWO,
+    OPTIONS_THREE,
+    OPTIONS_FOUR,
+};
+
+
 #define CASE_N "-n"
 #define CASE_I "-i"
 #define CASE_E "-e"
+
 
 char desktop[MAX_LINE][MAX_COLUMN];
 char exec_cat_name[20] = "cat ";
@@ -22,18 +33,19 @@ int main(int agrc, char *argv[]){
     char name_zh[50] = {0};
     FILE *fp;
     
+    //判断输入参数个数
     if (agrc < 3)
     {
         printf("not enough argment\n");
         return -1;
     }
-    
+    //输入参数赋值
     for (size_t i = 0; i < agrc; i++)
     {
         memcpy(options[i],argv[i],sizeof(argv[i])+1);
     }
-
-    char *temp = options[2];
+    // 利用cat 命令读取desktop文件数据
+    char *temp = options[OPTIONS_TWO];
     strcat(exec_cat_name,temp);
 
     if ((fp = popen(exec_cat_name,"r")) == NULL)
@@ -41,6 +53,7 @@ int main(int agrc, char *argv[]){
         perror("popen error\n");
         return -1;
     }
+    // 将Name Name[zh_CN]　Icon Exec字段赋值给desktop[i]数组
     size_t i=0;
     bool with_zh = false;
     while (fgets(desktop[i], 255, fp) != NULL)
@@ -66,42 +79,54 @@ int main(int agrc, char *argv[]){
         }   
         i++;
     }
-  
-    if (memcmp(options[3],"-n",2) == 0)
+
+    // 排除 "-n" "-i" "-e" 以外的情况
+    if (strlen(options[OPTIONS_THREE]) != OPTIONS_LENGTH)
+    {
+        printf("error argument [%s] \n",options[OPTIONS_THREE]);
+        if (pclose(fp) == -1) {
+            perror("pclose failed\n");
+            return -2;
+        }
+        return -1;
+    }
+    
+    // 函数主题，相应各选项
+    if (memcmp(options[OPTIONS_THREE],"-n",OPTIONS_LENGTH) == 0)
     {
         if (with_zh){
             printf("%s或%s",name+5,name_zh+12);
         }else{
             printf("%s",name+5);
         }
-    }else if (memcmp(options[3],"-i",2) == 0)
+    }
+    else if (memcmp(options[OPTIONS_THREE],"-i",OPTIONS_LENGTH) == 0)
     {
         printf("%s",icon+5);
-    }else if (memcmp(options[3],"-e",2) == 0)
+    }
+    else if (memcmp(options[OPTIONS_THREE],"-e",OPTIONS_LENGTH) == 0)
     {
-        if (options[4])
+        if (strlen(options[OPTIONS_FOUR]))
         {
             char exec_combain[100] = {0};
             //char *ptr = strtok(exec, " ");
-            sprintf(exec_combain, "%s > %s", exec+5, options[4]);
-            printf("%s",exec_combain);
+            sprintf(exec_combain, "%s > %s", exec+5, options[OPTIONS_FOUR]);
             system(exec_combain);
         }else
         {
-            printf("need file path after '-e' ");
-        }
-        printf("%s",options[4]);
-       
-    }else
+            printf("need file path after '-e'\n");
+        }      
+    }
+    else
     {
         printf("without argument -n -i -e !!!\n");
     }
     
-    
     if (pclose(fp) == -1) {
-        perror("pclose failed");
+        perror("pclose failed\n");
         return -2;
     }
+
     return 0;
 }
 
