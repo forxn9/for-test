@@ -18,12 +18,13 @@ char output[MAX_LINE][MAX_COLUMN] = {0};
 char debname[20];
 char exec_debname[20] = "dpkg -L ";
 
-int StorageStr(){
+int StorageStr(char **name){
     int i=0;
     FILE *fp;
     char temp[100] = {0};
-    printf("please input the deb name:");
-    scanf("%s",debname);
+    // printf("please input the deb name:");
+    // scanf("%s",debname);
+    char *debname = name[1];
     strcat(exec_debname,debname);
 
     if ((fp = popen(exec_debname,"r")) == NULL){
@@ -102,7 +103,8 @@ int judge_file_uid(char *file_path){
     return 0;
 }
 
-int main(){
-    StorageStr();
+int main(int argc, char **argv){
+    char **package_name = argv;
+    StorageStr(package_name);
     return 0;
 }
