@@ -24,7 +24,7 @@ enum{
 char desktop[MAX_LINE][MAX_COLUMN];
 char exec_cat_name[20] = "cat ";
 
-int main(int agrc, char *argv[]){
+int main(int agrc, char **argv){
 
     char options[6][100] = {0};
     char name[100] = {0};
@@ -42,7 +42,7 @@ int main(int agrc, char *argv[]){
     //输入参数赋值
     for (size_t i = 0; i < agrc; i++)
     {
-        memcpy(options[i],argv[i],sizeof(argv[i])+1);
+        memcpy(options[i],argv[i],strlen(argv[i]));
     }
     // 利用cat 命令读取desktop文件数据
     char *temp = options[OPTIONS_TWO];
