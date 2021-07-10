@@ -22,7 +22,7 @@ enum{
 
 
 char desktop[MAX_LINE][MAX_COLUMN];
-char exec_cat_name[20] = "cat ";
+char exec_cat_name[100] = "cat ";
 
 int main(int agrc, char **argv){
 
@@ -62,11 +62,23 @@ int main(int agrc, char **argv){
         {
             if (strstr(desktop[i],"[zh_CN]"))
             {
-                memcpy(name_zh,desktop[i]+1,strlen(desktop[i])-3);
+                if (desktop[i][strlen(desktop[i])-2] == ';')
+                {
+                    memcpy(name_zh,desktop[i]+1,strlen(desktop[i])-4);
+                }else
+                {
+                    memcpy(name_zh,desktop[i]+1,strlen(desktop[i])-3);
+                }
                 with_zh =true;
             }else
             {
-                memcpy(name,desktop[i],strlen(desktop[i])-1);
+                if (desktop[i][strlen(desktop[i])-2] == ';')
+                {
+                    memcpy(name,desktop[i],strlen(desktop[i])-2);
+                }else
+                {
+                    memcpy(name,desktop[i],strlen(desktop[i])-1);
+                }
             }
         }
         if (strstr(desktop[i],"Icon"))

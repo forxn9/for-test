@@ -36,7 +36,7 @@ int StorageStr(char **name){
     {
         memcpy(output[i],temp,strlen(temp)-1);
         judge_file_uid(output[i]);
-        judge_file_symlink(output[i]);
+        //judge_file_symlink(output[i]);
         memset(temp,0,sizeof(temp));
         i++;
     }
@@ -97,7 +97,7 @@ int judge_file_uid(char *file_path){
     }
 
     if (stat_data.st_uid != 0){
-        printf("%s",file_path);
+        printf("%s\n",file_path);
     }
     
     return 0;
