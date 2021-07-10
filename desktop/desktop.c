@@ -58,6 +58,11 @@ int main(int agrc, char **argv){
     bool with_zh = false;
     while (fgets(desktop[i], 255, fp) != NULL)
     {
+        if (strncmp(desktop[0],"[Desktop Entry]",15))
+        {
+            return 1;
+        }
+        // TODO check other desktop rule
         if (strstr(desktop[i],"Name"))
         {
             if (strstr(desktop[i],"[zh_CN]"))
