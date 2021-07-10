@@ -62,12 +62,20 @@ int main(int agrc, char **argv){
         {
             if (strstr(desktop[i],"[zh_CN]"))
             {
+                #if defined(DEBUG)
+                int N =strlen(desktop[i]);
+                printf("N:%d\n",N);
+                for (size_t j = 0; j < strlen(desktop[i]); j++)
+                {
+                   printf("desktop[%d][%d]:%c\n",i,j,desktop[i][j]);
+                }
+                #endif // DEBUG
                 if (desktop[i][strlen(desktop[i])-2] == ';')
                 {
-                    memcpy(name_zh,desktop[i]+1,strlen(desktop[i])-4);
+                    memcpy(name_zh,desktop[i],strlen(desktop[i])-3); //直接去掉字符‘;&&"’
                 }else
                 {
-                    memcpy(name_zh,desktop[i]+1,strlen(desktop[i])-3);
+                    memcpy(name_zh,desktop[i],strlen(desktop[i])-2);
                 }
                 with_zh =true;
             }else
@@ -107,9 +115,9 @@ int main(int agrc, char **argv){
     if (memcmp(options[OPTIONS_THREE],"-n",OPTIONS_LENGTH) == 0)
     {
         if (with_zh){
-            printf("%s或%s",name+5,name_zh+12);
+            printf("%s或%s\n",name+5,name_zh+13);
         }else{
-            printf("%s",name+5);
+            printf("%s\n",name+5);
         }
     }
     else if (memcmp(options[OPTIONS_THREE],"-i",OPTIONS_LENGTH) == 0)
